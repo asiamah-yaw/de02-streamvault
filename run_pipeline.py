@@ -42,8 +42,16 @@ def main():
     quarantine.to_csv(config.OUTPUT_DIR / "quarantine.csv", index=False)
     print(f"[1 load] {len(classified)} rows read | {len(fetchable)} fetchable "
           f"| {len(quarantine)} quarantined -> outputs/quarantine.csv")
-    manifest = fetch_all(fetchable["movie_id"].tolist())                # stage 2             # stage 2
-
+    manifest = fetch_all(fetchable["movie_id"].tolist())                # stage 2
+    manifest.to_csv(config.OUTPUT_DIR / "fetch_manifest.csv", index=False)
+    movies = manifest.loc[manifest["endpoint"].eq("movie")]
+    live_calls = (manifest["status"].notna() & ~manifest["from_cache"]).sum()
+    not_found = movies.loc[movies["status"].eq(404), "movie_id"].tolist()
+    print(f"[2 fetch] {len(movies)} ids | {movies['status'].eq(200).sum()} found "
+          f"| {len(not_found)} not found | {live_calls} live calls "
+          f"-> outputs/fetch_manifest.csv")
+    if not_found:
+        print(f"          not found on TMDb: {not_found}")
     heading("VALIDATE")
     films, cast, crew = build_tables(config.RAW_DIR)                    # stage 3
     report = quality_report(films)                                      # stage 5
