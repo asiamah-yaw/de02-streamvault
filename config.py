@@ -10,7 +10,7 @@ from pathlib import Path
 # synthetic data in a temporary folder. Normal runs use the defaults.
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = Path(os.environ.get("STREAMVAULT_DATA_DIR", PROJECT_ROOT / "data"))
-ID_LIST_PATH = DATA_DIR / "id_list.csv"     # client input, never edited
+ID_LIST_PATH = Path(os.environ.get("STREAMVAULT_ID_LIST", DATA_DIR / "id_list.csv"))  # client input, never edited; a quarter's list can be pointed to instead
 RAW_DIR = DATA_DIR / "raw"                   # cached API responses (not in git)
 OUTPUT_DIR = Path(os.environ.get("STREAMVAULT_OUTPUT_DIR", PROJECT_ROOT / "outputs"))
 
