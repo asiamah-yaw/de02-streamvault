@@ -6,6 +6,9 @@ Needs:  the TMDB_API_KEY environment variable (see README).
 import os
 import sys
 
+import pandas as pd
+
+
 import config
 from pipeline.clean import apply_cleaning
 from pipeline.fetch import fetch_all
@@ -34,7 +37,12 @@ def main():
 
     heading("EXTRACT")
     fetchable, quarantine = load_and_classify_ids(config.ID_LIST_PATH)  # stage 1
-    manifest = fetch_all(fetchable["movie_id"].tolist())                # stage 2
+    classified = pd.concat([fetchable, quarantine]).sort_values("row_number")
+    classified.to_csv(config.OUTPUT_DIR / "ids_classified.csv", index=False)
+    quarantine.to_csv(config.OUTPUT_DIR / "quarantine.csv", index=False)
+    print(f"[1 load] {len(classified)} rows read | {len(fetchable)} fetchable "
+          f"| {len(quarantine)} quarantined -> outputs/quarantine.csv")
+    manifest = fetch_all(fetchable["movie_id"].tolist())                # stage 2             # stage 2
 
     heading("VALIDATE")
     films, cast, crew = build_tables(config.RAW_DIR)                    # stage 3
