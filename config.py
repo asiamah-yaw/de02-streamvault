@@ -66,6 +66,11 @@ CREW_FIELDS = {
     "job": "job",
 }
 
+# --- Talent (Phase 4) - assumptions; see ADR ---
+LEAD_MAX_ORDER = 0                           # 0 = top-billed only; 2 would mean top 3
+DIRECTOR_JOBS = ["Director"]                 # alternative: ["Director", "Co-Director"]
+MIN_TALENT_FILMS = None                      # set in Phase 7, from the counts stage 4 prints
+
 DATE_FIELDS = ["release_date"]                       # parsed to dates
 INT_FIELDS = ["budget", "revenue", "runtime", "vote_count"]  # nullable whole numbers
 KNOWN_STATUSES = ["Rumored", "Planned", "In Production",

@@ -32,12 +32,49 @@
 - **What I did about it:** recorded each as "not found" with the fetch time; credits were not requested for them; they are excluded from the analysis but counted in the reconciliation.
 - **Residual risk:** The underlying cause of these invalid IDs could not be verified. They may be typographical errors, IDs copied from a different film database, or incorrectly mapped records from one of the source files. If the IDs were intended to represent real films, those films will not appear in the final analysis until the correct identifiers are obtained. Further investigation with the data provider would be required to determine the original intended records.
 
+### F-03: Talent counts may reflect franchises, not people
+- **Detected by:** Stage 4 counts of distinct films per person. Of 66 directors,
+  13 have 3 or more films; of 48 lead actors, 19 have 3 or more. The count treats
+  every film alike, so a director with three entries in one franchise passes the
+  same test as one with three unrelated films. The co-directed films point the same
+  way: most are franchise entries (The Matrix ×3, Avengers ×2, Shrek ×2, Pirates of
+  the Caribbean). Stage 4 does not yet measure how many of the 13 and 19 reach
+  3 films through a single collection; stage 7 will.
+- **Effect on the recommendation:** A person can look reliable only because their
+  franchise did well. Kwame's negotiators would then credit that person with the
+  franchise's results and press a point the evidence does not support. This affects
+  the talent ask only; the franchise-versus-standalone comparison does not use these
+  counts.
+- **Handling:** Stage 7 counts each person's standalone films separately and reports
+  distinct collections per person. The minimum film count is set in Phase 7 and
+  recorded in an ADR before any talent results are viewed.
+- **Residual risk:** With 112 films, few people may reach the minimum on standalone
+  titles alone. If so, the talent answer is reported as "could not verify" and is not
+  stated more firmly than the data allows.
+- **Severity:** High (talent ask).
+
+### F-04: Co-Director credits are not counted as directors
+- **Detected by:** The Directing job counts, which show 7 Co-Director credits, and a
+  check that none of those 7 people is also credited as Director on the same film.
+- **Effect on the recommendation:** The 7 people, on 5 animated films (Ice Age,
+  Ice Age: Dawn of the Dinosaurs, Monsters, Inc., Shrek the Third, Toy Story 2), are
+  left out of the director ranking. Every film still has a Director credit, so no
+  film is lost and the film counts do not change.
+- **Handling:** The decision is an exact match on "Director". Adding "Co-Director" is
+  a one-line change to `DIRECTOR_JOBS` in config, so the memo can state whether the
+  answer changes under the alternative.
+- **Residual risk:** Low. Only someone near the minimum film count could change rank;
+  Lee Unkrich, with 2 Co-Director credits, is the one known case.
+- **Severity:** Low.
+
 
 ## Looked wrong, is not wrong
 
 | Apparent problem | Why it looks wrong | Why it is actually fine |
 |---|---|---|
 | The file uses Windows line endings | It differs from the Linux files around it | It does not change any value, and it is stored unchanged in git (.gitattributes) |
+| 9 films have two or more directors | It could look like repeated rows from the join | They are real co-directing credits (the Wachowskis, the Russos). The 122 Director credits equal 112 films plus 10 extra: one extra on each of 8 films and two on Shrek 2 (three directors), so the totals reconcile. The films table keeps one row per film, with the names in `director_names` and the count in `n_directors` |
+
 
 ## Could not verify
 - tt0468569 is an IMDb-format ID. Resolving it would need an endpoint outside the brief (see ADR). It may be a real film, possibly one already on the list.

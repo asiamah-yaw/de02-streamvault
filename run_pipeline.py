@@ -67,8 +67,20 @@ def main():
     report = quality_report(films)                                      # stage 5
 
     heading("TRANSFORM")
-    films = join_talent(films, cast, crew)                              # stage 4
-    films = apply_cleaning(films)                                       # stage 6
+        # Stage 4 - join lead actor and directors onto films
+    films_talent, film_directors, film_leads, job_counts, join_report = join_talent(
+        films, cast, crew, manifest)
+    films_talent.to_csv(config.OUTPUT_DIR / "films_with_talent.csv", index=False)
+    film_directors.to_csv(config.OUTPUT_DIR / "film_directors.csv", index=False)
+    film_leads.to_csv(config.OUTPUT_DIR / "film_leads.csv", index=False)
+    job_counts.to_csv(config.OUTPUT_DIR / "director_job_counts.csv", index=False)
+    (pd.Series(join_report, name="value").rename_axis("measure").reset_index()
+       .to_csv(config.OUTPUT_DIR / "join_report.csv", index=False))
+    print(f"[4 join] films {join_report['films_before']} -> {join_report['films_after']} | "
+          f"2+ directors {join_report['films_2plus_directors']} | "
+          f"no director {join_report['films_no_director']} | "
+          f"no lead {join_report['films_cast_but_no_lead'] + join_report['films_no_cast_rows']}")
+    films = apply_cleaning(films_talent)                              # stage 6
     kpis = both_windows(films)                                          # stage 7
 
     heading("QUALITY CHECK")
