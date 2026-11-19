@@ -1,0 +1,4 @@
+collection_id,collection_name,listed_films,median_revenue,weakest_revenue,median_rating,first_year,last_year,weakest_film,weakest_share_of_median,reason
+86311,The Avengers Collection,4,1785615277.0,1405403694,8.166,2012,2019,Avengers: Age of Ultron,0.7870697076254909,1786M median revenue per film across 4 listed films; weakest listed film Avengers: Age of Ultron at 79% of that
+263,The Dark Knight Collection,3,1008480529.0,374218673,7.801,2005,2012,Batman Begins,0.3710717879412821,1008M median revenue per film across 3 listed films; weakest listed film Batman Begins at 37% of that
+295,Pirates of the Caribbean Collection,5,961691209.0,655011224,7.28,2003,2017,Pirates of the Caribbean: The Curse of the Black Pearl,0.6811034746601287,962M median revenue per film across 5 listed films; weakest listed film Pirates of the Caribbean: The Curse of the Black Pearl at 68% of that

@@ -1,0 +1,6 @@
+movie_id,title,release_year,from_2000,revenue,vote_average,reason
+27205,Inception,2010,True,839030630,8.373,"839M revenue, rated 8.4, released 2010"
+157336,Interstellar,2014,True,746606706,8.5,"747M revenue, rated 8.5, released 2014"
+13,Forrest Gump,1994,False,677387716,8.462,"677M revenue, rated 8.5, released 1994 (before 2000)"
+10681,WALL·E,2008,True,521311860,8.129,"521M revenue, rated 8.1, released 2008"
+424,Schindler's List,1993,False,321365567,8.57,"321M revenue, rated 8.6, released 1993 (before 2000)"

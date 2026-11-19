@@ -6,13 +6,16 @@ import os
 from pathlib import Path
 
 # --- Paths (relative to the project root, so they work on any machine) ---
-# The two environment variables are optional; only the timing test sets them, to run on
-# synthetic data in a temporary folder. Normal runs use the defaults.
+# Three optional environment variables; normal runs use the defaults.
+#   STREAMVAULT_ID_LIST     a quarter's own candidate list (the client's original stays untouched)
+#   STREAMVAULT_DATA_DIR    and STREAMVAULT_OUTPUT_DIR: set only by the timing test, to run on
+#                           synthetic data in a temporary folder
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = Path(os.environ.get("STREAMVAULT_DATA_DIR", PROJECT_ROOT / "data"))
 ID_LIST_PATH = Path(os.environ.get("STREAMVAULT_ID_LIST", DATA_DIR / "id_list.csv"))  # client input, never edited; a quarter's list can be pointed to instead
 RAW_DIR = DATA_DIR / "raw"                   # cached API responses (not in git)
 OUTPUT_DIR = Path(os.environ.get("STREAMVAULT_OUTPUT_DIR", PROJECT_ROOT / "outputs"))
+SNAPSHOT_DIR = PROJECT_ROOT / "snapshots"    # saved decision-level results, one dated folder per run (committed)
 
 # --- Input file ---
 ID_COLUMN = "tmdb_id"                        # the only column in id_list.csv

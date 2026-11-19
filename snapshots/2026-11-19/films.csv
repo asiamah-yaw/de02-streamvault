@@ -1,0 +1,113 @@
+movie_id,title,revenue,is_franchise,collection_name
+10138,Iron Man 2,623933331,True,Iron Man Collection
+10192,Shrek Forever After,752600867,True,Shrek Collection
+10193,Toy Story 3,1067316101,True,Toy Story Collection
+105,Back to the Future,391546852,True,Back to the Future Collection
+10681,WALL·E,521311860,False,
+11,Star Wars,775398007,True,Star Wars Collection
+111,Scarface,66023329,False,
+1124,The Prestige,109676311,False,
+120,The Lord of the Rings: The Fellowship of the Ring,871368364,True,The Lord of the Rings Collection
+121,The Lord of the Rings: The Two Towers,926287400,True,The Lord of the Rings Collection
+122,The Lord of the Rings: The Return of the King,1118888979,True,The Lord of the Rings Collection
+122917,The Hobbit: The Battle of the Five Armies,956019788,True,The Hobbit Collection
+12444,Harry Potter and the Deathly Hallows: Part 1,954305868,True,Harry Potter Collection
+12445,Harry Potter and the Deathly Hallows: Part 2,1341511219,True,Harry Potter Collection
+129,Spirited Away,274925095,False,
+13,Forrest Gump,677387716,False,
+1422,The Departed,291465000,False,
+155,The Dark Knight,1008480529,True,The Dark Knight Collection
+1571,Live Free or Die Hard,383531464,True,Die Hard Collection
+1572,Die Hard: With a Vengeance,366101666,True,Die Hard Collection
+1573,Die Hard 2,240031094,True,Die Hard Collection
+157336,Interstellar,746606706,False,
+161,Ocean's Eleven,450717150,True,Ocean's Collection
+163,Ocean's Twelve,362744280,True,Ocean's Collection
+165,Back to the Future Part II,332861197,True,Back to the Future Collection
+166426,Pirates of the Caribbean: Dead Men Tell No Tales,795922298,True,Pirates of the Caribbean Collection
+1726,Iron Man,585174222,True,Iron Man Collection
+177677,Mission: Impossible - Rogue Nation,682716636,True,Mission: Impossible Collection
+1865,Pirates of the Caribbean: On Stranger Tides,1046721266,True,Pirates of the Caribbean Collection
+1891,The Empire Strikes Back,538400000,True,Star Wars Collection
+1892,Return of the Jedi,572700000,True,Star Wars Collection
+1893,Star Wars: Episode I - The Phantom Menace,1046515409,True,Star Wars Collection
+1894,Star Wars: Episode II - Attack of the Clones,649398328,True,Star Wars Collection
+1895,Star Wars: Episode III - Revenge of the Sith,850000000,True,Star Wars Collection
+196,Back to the Future Part III,245077583,True,Back to the Future Collection
+217,Indiana Jones and the Kingdom of the Crystal Skull,786636033,True,Indiana Jones Collection
+218,The Terminator,78371200,True,The Terminator Collection
+22,Pirates of the Caribbean: The Curse of the Black Pearl,655011224,True,Pirates of the Caribbean Collection
+238,The Godfather,245066411,True,The Godfather Collection
+24,Kill Bill: Vol. 1,180906076,True,Kill Bill Collection
+240,The Godfather Part II,102600000,True,The Godfather Collection
+242,The Godfather Part III,136766062,True,The Godfather Collection
+24428,The Avengers,1518815515,True,The Avengers Collection
+2501,The Bourne Identity,214034224,True,The Bourne Collection
+2502,The Bourne Supremacy,288500217,True,The Bourne Collection
+2503,The Bourne Ultimatum,442824138,True,The Bourne Collection
+272,Batman Begins,374218673,True,The Dark Knight Collection
+27205,Inception,839030630,False,
+274,The Silence of the Lambs,272742922,True,The Hannibal Lecter Collection
+278,The Shawshank Redemption,28341469,False,
+280,Terminator 2: Judgment Day,517814175,True,The Terminator Collection
+285,Pirates of the Caribbean: At World's End,961691209,True,Pirates of the Caribbean Collection
+296,Terminator 3: Rise of the Machines,435000000,True,The Terminator Collection
+298,Ocean's Thirteen,311312624,True,Ocean's Collection
+299534,Avengers: Endgame,2942649778,True,The Avengers Collection
+299536,Avengers: Infinity War,2052415039,True,The Avengers Collection
+301528,Toy Story 4,1073841394,True,Toy Story Collection
+329,Jurassic Park,1058454230,True,Jurassic Park Collection
+330,The Lost World: Jurassic Park,618638999,True,Jurassic Park Collection
+331,Jurassic Park III,368780809,True,Jurassic Park Collection
+348,Alien,104931801,True,Alien Collection
+393,Kill Bill: Vol. 2,152159461,True,Kill Bill Collection
+41513,The Smurfs,563749323,True,The Smurfs (Theatrical) Collection
+424,Schindler's List,321365567,False,
+425,Ice Age,383257136,True,Ice Age Collection
+429,"The Good, the Bad and the Ugly",38900000,False,
+49026,The Dark Knight Rises,1081041287,True,The Dark Knight Collection
+49051,The Hobbit: An Unexpected Journey,1021103568,True,The Hobbit Collection
+534,Terminator Salvation,371353001,True,The Terminator Collection
+550,Fight Club,100853753,False,
+562,Die Hard,140767956,True,Die Hard Collection
+56292,Mission: Impossible - Ghost Protocol,694713380,True,Mission: Impossible Collection
+57158,The Hobbit: The Desolation of Smaug,958400000,True,The Hobbit Collection
+578,Jaws,470653000,True,Jaws Collection
+58,Pirates of the Caribbean: Dead Man's Chest,1066179747,True,Pirates of the Caribbean Collection
+585,"Monsters, Inc.",650000000,True,"Monsters, Inc. Collection"
+603,The Matrix,463517383,True,The Matrix Collection
+604,The Matrix Reloaded,738599701,True,The Matrix Collection
+605,The Matrix Revolutions,424988211,True,The Matrix Collection
+620,Ghostbusters,296640120,True,Ghostbusters Collection
+641,Requiem for a Dream,7390108,False,
+671,Harry Potter and the Philosopher's Stone,1029374615,True,Harry Potter Collection
+672,Harry Potter and the Chamber of Secrets,876688482,True,Harry Potter Collection
+673,Harry Potter and the Prisoner of Azkaban,789804554,True,Harry Potter Collection
+674,Harry Potter and the Goblet of Fire,895921036,True,Harry Potter Collection
+675,Harry Potter and the Order of the Phoenix,938212738,True,Harry Potter Collection
+679,Aliens,183316455,True,Alien Collection
+680,Pulp Fiction,213928762,False,
+68721,Iron Man 3,1215577205,True,Iron Man Collection
+76341,Mad Max: Fury Road,378858340,True,Mad Max Collection
+767,Harry Potter and the Half-Blood Prince,933959197,True,Harry Potter Collection
+769,GoodFellas,47072327,False,
+77,Memento,40060108,False,
+78,Blade Runner,41722424,True,Blade Runner Collection
+8077,Alien³,159773545,True,Alien Collection
+8078,Alien Resurrection,162000000,True,Alien Collection
+808,Shrek,489676241,True,Shrek Collection
+809,Shrek 2,932542741,True,Shrek Collection
+810,Shrek the Third,808310187,True,Shrek Collection
+8355,Ice Age: Dawn of the Dinosaurs,886686817,True,Ice Age Collection
+85,Raiders of the Lost Ark,389925971,True,Indiana Jones Collection
+8587,The Lion King,763455561,True,The Lion King Collection
+862,Toy Story,401157969,True,Toy Story Collection
+863,Toy Story 2,497375404,True,Toy Story Collection
+87,Indiana Jones and the Temple of Doom,333107271,True,Indiana Jones Collection
+89,Indiana Jones and the Last Crusade,474171806,True,Indiana Jones Collection
+950,Ice Age: The Meltdown,660998756,True,Ice Age Collection
+954,Mission: Impossible,457696391,True,Mission: Impossible Collection
+955,Mission: Impossible II,546388108,True,Mission: Impossible Collection
+956,Mission: Impossible III,398479497,True,Mission: Impossible Collection
+9806,The Incredibles,631442092,True,The Incredibles Collection
+99861,Avengers: Age of Ultron,1405403694,True,The Avengers Collection
