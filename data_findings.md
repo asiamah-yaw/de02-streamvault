@@ -123,6 +123,15 @@
 - **What I did about it:** The rules stay as insurance for next year's list, labelled as such, and are proven by a test with made-up rows.
 - **Residual risk:** None for this list.
 
+### F-13: One film universe can appear as two collections — Severity: Medium (talent ask)
+
+- **What it is:** TMDb lists Iron Man and The Avengers as separate collections, although they belong to one connected film series. The talent rule counts them as two independent contexts.
+- **How I detected it:** Reading the qualifying talent in outputs/talent_leads.csv: Robert Downey Jr. reaches 2 contexts only through these two collections.
+- **Scale:** 1 lead actor in the qualifying list; other shared universes may exist and cannot be detected from the allowed data.
+- **Effect on the client's number:** Robert Downey Jr. looks like a signal across contexts when the evidence is one franchise. Negotiators should not use him as a lever outside that series.
+- **What I did about it:** Reported; the memo treats his figure as franchise evidence only.
+- **Residual risk:** The same effect can appear with other connected series next year; the talent table shows collections and standalone films so a reader can check.
+
 
 ## Looked wrong, is not wrong
 

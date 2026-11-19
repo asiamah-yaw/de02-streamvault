@@ -16,7 +16,7 @@ ID_COLUMN = "tmdb_id"                        # the only column in id_list.csv
 
 # --- Analysis ---
 WINDOW_CUTOFF_YEAR = 2000                    # brief: all years vs 2000-onward
-MIN_GROUP_SIZE = None                        # decided in Phase 7 (KPIs)
+MIN_GROUP_SIZE = 5                           # independent units per group (ADR; set after group sizes were known)
 
 # --- TMDb API ---
 API_KEY_ENV_VAR = "TMDB_API_KEY"             # the key is read from here, never stored
@@ -69,7 +69,7 @@ CREW_FIELDS = {
 # --- Talent (Phase 4) - assumptions; see ADR ---
 LEAD_MAX_ORDER = 0                           # 0 = top-billed only; 2 would mean top 3
 DIRECTOR_JOBS = ["Director"]                 # alternative: ["Director", "Co-Director"]
-MIN_TALENT_FILMS = None                      # set in Phase 7, from the counts stage 4 prints
+MIN_TALENT_FILMS = 3                         # talent needs 3+ films (ADR; set from stage 4 counts, no revenue)
 
 DATE_FIELDS = ["release_date"]                       # parsed to dates
 INT_FIELDS = ["budget", "revenue", "runtime", "vote_count"]  # nullable whole numbers
@@ -83,3 +83,10 @@ SEQUEL_PATTERN = r"(?:\s\d+|\s(?:II|III|IV|V|VI))(?::|$)|\bPart\b"   # review li
 # --- Cleaning (Phase 6) - decisions; see ADRs ---
 EXCLUDE_CHECKS = ["status_not_released", "released_after_fetch"]   # stage 5 flags that exclude a film
 FRANCHISE_OVERRIDES = {}     # {movie_id: reason} forces a film to franchise; empty by default (ADR)
+
+# --- KPIs (Phase 7) - fixed before any result was viewed; see ADRs ---
+MIN_TALENT_CONTEXTS = 2      # films from 2+ different collections/standalones, so a person is not just one franchise
+MIN_SHORTLIST_FILMS = 3      # a franchise needs 3+ listed films to be shortlisted
+SHORTLIST_FRANCHISES = 3     # brief: three strongest franchise targets
+SHORTLIST_STANDALONES = 5    # brief: five strongest standalones
+SENSITIVITY_FRANCHISE_CASES = {429: "The Good, the Bad and the Ugly: third film of a trilogy, no TMDb collection (found by reading the list)"}

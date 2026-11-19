@@ -100,8 +100,13 @@ def main():
     print(f"[6 clean] films {len(films_talent)} -> {len(films_clean)} | excluded {len(excluded)} "
           "-> outputs/films_clean.csv, excluded_films.csv, cleaning_report.csv")
 
-    # Stage 7 - KPIs for both windows
-    kpis = both_windows(films_clean)
+    # Stage 7 - KPIs for both windows (decisions fixed before results were viewed)
+    kpis = both_windows(films_clean, film_directors, film_leads)
+    for name, table in kpis.items():
+        table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
+    verdicts = kpis["kpi_comparison"]
+    print("[7 kpis] " + " | ".join(f"{w}: {v}" for w, v in zip(verdicts["window"], verdicts["verdict"]))
+          + " -> outputs/kpi_*.csv, shortlist_*.csv, talent_*.csv, deal_note.csv")
 
     heading("QUALITY CHECK")
     # Stage 9 - spot-check against the live API (uses the films as TMDb gave them)
