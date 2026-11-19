@@ -132,6 +132,15 @@
 - **What I did about it:** Reported; the memo treats his figure as franchise evidence only.
 - **Residual risk:** The same effect can appear with other connected series next year; the talent table shows collections and standalone films so a reader can check.
 
+### F-14: The analysis reproduces the source, and nothing has changed that moves the answer — Severity: Low
+
+- **What it is:** A live re-check of 13 films chosen for risk (messiest parsing, extremes, films affected by a decision, the shortlist boundaries) plus the 5 not-found ids.
+- **How I detected it:** Stage 9 spot-check, outputs/spotcheck.csv and spotcheck_summary.csv; live responses kept in outputs/spotcheck_live/.
+- **Scale:** 130 of 130 fields match between our tables and what was fetched; 128 of 130 match the live source exactly, 2 ratings drifted within the 0.1 tolerance; all 5 not-found ids are still not found.
+- **Effect on the client's number:** None. The verdict, the strongest franchise and all 8 shortlisted titles are unchanged; the strongest franchise leads the second by 1.77 times per film in both windows.
+- **What I did about it:** Nothing needed; the analysis stays on the fetched snapshot, with its as-of date.
+- **Residual risk:** Both sides come from the same source, so this does not show the source's revenue is correct; 13 risk-weighted films are not the whole list (up to about 1 in 5 could still differ elsewhere); retries during the first fetch were not recorded.
+
 
 ## Looked wrong, is not wrong
 

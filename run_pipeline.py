@@ -128,7 +128,13 @@ def main():
     if "--skip-spotcheck" in sys.argv:
         print("[9 spot-check] skipped (--skip-spotcheck)")
     else:
-        checks = timed("9_spotcheck", spot_check, films, sample_ids=None)
+        checks = timed("9_spotcheck", spot_check, films, films_clean, film_directors, film_leads, manifest, kpis)
+        for name, table in checks.items():
+            table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
+        s = checks["spotcheck_summary"].set_index("measure")["value"]
+        print(f"[9 spot-check] {s['films_compared_live']} films compared live | {s['live_calls']} calls | "
+              f"moves the recommendation: {s['moves_recommendation']} ({s['impact_detail']}) "
+              "-> outputs/spotcheck.csv, spotcheck_summary.csv")
 
     heading("LOAD")
     TIMINGS["total_in_process"] = round(time.perf_counter() - run_start, 3)

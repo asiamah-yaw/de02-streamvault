@@ -97,3 +97,9 @@ MIN_SHORTLIST_FILMS = 3      # a franchise needs 3+ listed films to be shortlist
 SHORTLIST_FRANCHISES = 3     # brief: three strongest franchise targets
 SHORTLIST_STANDALONES = 5    # brief: five strongest standalones
 SENSITIVITY_FRANCHISE_CASES = {429: "The Good, the Bad and the Ugly: third film of a trilogy, no TMDb collection (found by reading the list)"}
+
+
+# --- Spot-check (Phase 9) - fixed before comparing; see ADR ---
+SPOTCHECK_MAX_CALLS = 50            # live calls per spot-check, at most (polite to a free API)
+SPOTCHECK_RATING_TOLERANCE = 0.1    # ratings drift daily; anything else must match exactly
+SPOTCHECK_SLICE_CAP = 5             # at most 5 films from any one franchise slice
