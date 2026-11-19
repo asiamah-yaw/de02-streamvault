@@ -1,10 +1,13 @@
 """Run the StreamVault pipeline end to end.
 
-Usage:  python run_pipeline.py
+Usage:  python run_pipeline.py                     (full run)
+        python run_pipeline.py --skip-spotcheck    (offline: no live spot-check)
 Needs:  the TMDB_API_KEY environment variable (see README).
+Every run writes outputs/stage_timings.csv: seconds per stage, for diagnosis.
 """
 import os
 import sys
+import time
 
 import pandas as pd
 
@@ -17,6 +20,16 @@ from pipeline.kpis import both_windows
 from pipeline.load_ids import load_and_classify_ids
 from pipeline.quality import quality_report
 from pipeline.spotcheck import spot_check
+
+TIMINGS = {}
+
+
+def timed(stage, func, *args, **kwargs):
+    """Run one stage and record its seconds (computation only; CSV writes are outside)."""
+    start = time.perf_counter()
+    result = func(*args, **kwargs)
+    TIMINGS[stage] = round(time.perf_counter() - start, 3)
+    return result
 
 
 def check_api_key():
@@ -31,12 +44,13 @@ def heading(title):
 
 
 def main():
+    run_start = time.perf_counter()
     check_api_key()
     config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     heading("EXTRACT")
     # Stage 1 - load and classify the id list
-    fetchable, quarantine = load_and_classify_ids(config.ID_LIST_PATH)
+    fetchable, quarantine = timed("1_load", load_and_classify_ids, config.ID_LIST_PATH)
     classified = pd.concat([fetchable, quarantine]).sort_values("row_number")
     classified.to_csv(config.OUTPUT_DIR / "ids_classified.csv", index=False)
     quarantine.to_csv(config.OUTPUT_DIR / "quarantine.csv", index=False)
@@ -44,7 +58,7 @@ def main():
           f"| {len(quarantine)} quarantined -> outputs/quarantine.csv")
 
     # Stage 2 - fetch details and credits (cache first)
-    manifest = fetch_all(fetchable["movie_id"].tolist())
+    manifest = timed("2_fetch", fetch_all, fetchable["movie_id"].tolist())
     manifest.to_csv(config.OUTPUT_DIR / "fetch_manifest.csv", index=False)
     movies = manifest.loc[manifest["endpoint"].eq("movie")]
     live_calls = (manifest["status"].notna() & ~manifest["from_cache"]).sum()
@@ -57,7 +71,7 @@ def main():
 
     heading("VALIDATE")
     # Stage 3 - flatten nested JSON into films, cast, crew
-    films, cast, crew, flat_report = build_tables(config.RAW_DIR)
+    films, cast, crew, flat_report = timed("3_flatten", build_tables, config.RAW_DIR)
     for name, table in {"films": films, "cast": cast, "crew": crew}.items():
         table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
     pd.Series(flat_report).to_csv(config.OUTPUT_DIR / "flatten_report.csv", header=["count"])
@@ -70,7 +84,7 @@ def main():
           f"unparseable {flat_report['release_date_unparseable']}")
 
     # Stage 5 - profile films as TMDb gave them (reports, never fixes)
-    quality, quality_flags, quality_skew = quality_report(films, manifest, quarantine)
+    quality, quality_flags, quality_skew = timed("5_quality", quality_report, films, manifest, quarantine)
     quality.to_csv(config.OUTPUT_DIR / "quality_report.csv", index=False)
     quality_flags.to_csv(config.OUTPUT_DIR / "quality_flags.csv", index=False)
     quality_skew.to_csv(config.OUTPUT_DIR / "quality_skew.csv", index=False)
@@ -79,8 +93,8 @@ def main():
 
     heading("TRANSFORM")
     # Stage 4 - join lead actor and directors onto films
-    films_talent, film_directors, film_leads, job_counts, join_report = join_talent(
-        films, cast, crew, manifest)
+    films_talent, film_directors, film_leads, job_counts, join_report = timed(
+        "4_join", join_talent, films, cast, crew, manifest)
     films_talent.to_csv(config.OUTPUT_DIR / "films_with_talent.csv", index=False)
     film_directors.to_csv(config.OUTPUT_DIR / "film_directors.csv", index=False)
     film_leads.to_csv(config.OUTPUT_DIR / "film_leads.csv", index=False)
@@ -93,7 +107,7 @@ def main():
           f"no lead {join_report['films_cast_but_no_lead'] + join_report['films_no_cast_rows']}")
 
     # Stage 6 - clean: exclusions, zero rule, franchise label, window, positions
-    films_clean, excluded, clean_report = apply_cleaning(films_talent, quality_flags)
+    films_clean, excluded, clean_report = timed("6_clean", apply_cleaning, films_talent, quality_flags)
     films_clean.to_csv(config.OUTPUT_DIR / "films_clean.csv", index=False)
     excluded.to_csv(config.OUTPUT_DIR / "excluded_films.csv", index=False)
     clean_report.to_csv(config.OUTPUT_DIR / "cleaning_report.csv", index=False)
@@ -101,7 +115,7 @@ def main():
           "-> outputs/films_clean.csv, excluded_films.csv, cleaning_report.csv")
 
     # Stage 7 - KPIs for both windows (decisions fixed before results were viewed)
-    kpis = both_windows(films_clean, film_directors, film_leads)
+    kpis = timed("7_kpis", both_windows, films_clean, film_directors, film_leads)
     for name, table in kpis.items():
         table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
     verdicts = kpis["kpi_comparison"]
@@ -109,10 +123,19 @@ def main():
           + " -> outputs/kpi_*.csv, shortlist_*.csv, talent_*.csv, deal_note.csv")
 
     heading("QUALITY CHECK")
-    # Stage 9 - spot-check against the live API (uses the films as TMDb gave them)
-    checks = spot_check(films, sample_ids=None)
+    # Stage 9 - spot-check against the live API (uses the films as TMDb gave them).
+    # --skip-spotcheck runs fully offline: used by the timing test, or by Adjoa without a connection.
+    if "--skip-spotcheck" in sys.argv:
+        print("[9 spot-check] skipped (--skip-spotcheck)")
+    else:
+        checks = timed("9_spotcheck", spot_check, films, sample_ids=None)
 
     heading("LOAD")
+    TIMINGS["total_in_process"] = round(time.perf_counter() - run_start, 3)
+    (pd.Series(TIMINGS, name="seconds").rename_axis("stage").reset_index()
+       .to_csv(config.OUTPUT_DIR / "stage_timings.csv", index=False))
+    print(f"[timing] " + " | ".join(f"{k} {v:.2f}s" for k, v in TIMINGS.items())
+          + " -> outputs/stage_timings.csv")
     print(f"All outputs are in {config.OUTPUT_DIR}")
 
 

@@ -2,14 +2,17 @@
 
 Change a value here, not inside the pipeline code.
 """
+import os
 from pathlib import Path
 
 # --- Paths (relative to the project root, so they work on any machine) ---
+# The two environment variables are optional; only the timing test sets them, to run on
+# synthetic data in a temporary folder. Normal runs use the defaults.
 PROJECT_ROOT = Path(__file__).resolve().parent
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = Path(os.environ.get("STREAMVAULT_DATA_DIR", PROJECT_ROOT / "data"))
 ID_LIST_PATH = DATA_DIR / "id_list.csv"     # client input, never edited
 RAW_DIR = DATA_DIR / "raw"                   # cached API responses (not in git)
-OUTPUT_DIR = PROJECT_ROOT / "outputs"        # everything the pipeline produces
+OUTPUT_DIR = Path(os.environ.get("STREAMVAULT_OUTPUT_DIR", PROJECT_ROOT / "outputs"))
 
 # --- Input file ---
 ID_COLUMN = "tmdb_id"                        # the only column in id_list.csv
@@ -28,8 +31,12 @@ RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
 SLEEP_BETWEEN_CALLS = 0.25                   # seconds; be polite to a free API
 USER_AGENT = "de02-streamvault-lab (student project)"
 
-# --- Performance ---
-TIME_BUDGET_SECONDS = None                   # decided in Phase 8 (timing)
+# --- Performance (Phase 8) - set before measuring; see ADR ---
+TIME_BUDGET_SECONDS = 10                     # cached rerun of stages 1-7 at 500 titles ("live in a meeting")
+TIME_HEADROOM_SECONDS = 5                    # median at 500 must be under this, so a 2x slower laptop still passes
+LINEAR_TOLERANCE = 1.5                       # seconds per title at 5,000 at most 1.5x that at 500
+TIMING_RUNS = 5                              # runs per size; run 1 reported separately
+TIMING_SIZES = [500, 5000]                   # synthetic list sizes (plus the real 112)
 
 
 # --- TMDb fields the pipeline depends on (Phase 3) ---
