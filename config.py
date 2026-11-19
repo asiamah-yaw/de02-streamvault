@@ -79,3 +79,7 @@ KNOWN_STATUSES = ["Rumored", "Planned", "In Production",
 # --- Profiling (Phase 5) - thresholds are assumptions; findings say so ---
 LOW_VOTE_COUNT = 50                          # ratings below this are not trusted
 SEQUEL_PATTERN = r"(?:\s\d+|\s(?:II|III|IV|V|VI))(?::|$)|\bPart\b"   # review list only
+
+# --- Cleaning (Phase 6) - decisions; see ADRs ---
+EXCLUDE_CHECKS = ["status_not_released", "released_after_fetch"]   # stage 5 flags that exclude a film
+FRANCHISE_OVERRIDES = {}     # {movie_id: reason} forces a film to franchise; empty by default (ADR)

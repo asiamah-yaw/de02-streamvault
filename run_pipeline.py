@@ -8,7 +8,6 @@ import sys
 
 import pandas as pd
 
-
 import config
 from pipeline.clean import apply_cleaning
 from pipeline.fetch import fetch_all
@@ -36,13 +35,16 @@ def main():
     config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     heading("EXTRACT")
-    fetchable, quarantine = load_and_classify_ids(config.ID_LIST_PATH)  # stage 1
+    # Stage 1 - load and classify the id list
+    fetchable, quarantine = load_and_classify_ids(config.ID_LIST_PATH)
     classified = pd.concat([fetchable, quarantine]).sort_values("row_number")
     classified.to_csv(config.OUTPUT_DIR / "ids_classified.csv", index=False)
     quarantine.to_csv(config.OUTPUT_DIR / "quarantine.csv", index=False)
     print(f"[1 load] {len(classified)} rows read | {len(fetchable)} fetchable "
           f"| {len(quarantine)} quarantined -> outputs/quarantine.csv")
-    manifest = fetch_all(fetchable["movie_id"].tolist())                # stage 2
+
+    # Stage 2 - fetch details and credits (cache first)
+    manifest = fetch_all(fetchable["movie_id"].tolist())
     manifest.to_csv(config.OUTPUT_DIR / "fetch_manifest.csv", index=False)
     movies = manifest.loc[manifest["endpoint"].eq("movie")]
     live_calls = (manifest["status"].notna() & ~manifest["from_cache"]).sum()
@@ -52,8 +54,10 @@ def main():
           f"-> outputs/fetch_manifest.csv")
     if not_found:
         print(f"          not found on TMDb: {not_found}")
+
     heading("VALIDATE")
-    films, cast, crew, flat_report = build_tables(config.RAW_DIR)       # stage 3
+    # Stage 3 - flatten nested JSON into films, cast, crew
+    films, cast, crew, flat_report = build_tables(config.RAW_DIR)
     for name, table in {"films": films, "cast": cast, "crew": crew}.items():
         table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
     pd.Series(flat_report).to_csv(config.OUTPUT_DIR / "flatten_report.csv", header=["count"])
@@ -64,6 +68,7 @@ def main():
           f"| no credits file {flat_report['films_without_credits_file']} "
           f"| release_date blank {flat_report['release_date_blank']}, "
           f"unparseable {flat_report['release_date_unparseable']}")
+
     # Stage 5 - profile films as TMDb gave them (reports, never fixes)
     quality, quality_flags, quality_skew = quality_report(films, manifest, quarantine)
     quality.to_csv(config.OUTPUT_DIR / "quality_report.csv", index=False)
@@ -73,7 +78,7 @@ def main():
           "-> outputs/quality_report.csv, quality_flags.csv, quality_skew.csv")
 
     heading("TRANSFORM")
-        # Stage 4 - join lead actor and directors onto films
+    # Stage 4 - join lead actor and directors onto films
     films_talent, film_directors, film_leads, job_counts, join_report = join_talent(
         films, cast, crew, manifest)
     films_talent.to_csv(config.OUTPUT_DIR / "films_with_talent.csv", index=False)
@@ -86,11 +91,21 @@ def main():
           f"2+ directors {join_report['films_2plus_directors']} | "
           f"no director {join_report['films_no_director']} | "
           f"no lead {join_report['films_cast_but_no_lead'] + join_report['films_no_cast_rows']}")
-    films = apply_cleaning(films_talent)                              # stage 6
-    kpis = both_windows(films)                                          # stage 7
+
+    # Stage 6 - clean: exclusions, zero rule, franchise label, window, positions
+    films_clean, excluded, clean_report = apply_cleaning(films_talent, quality_flags)
+    films_clean.to_csv(config.OUTPUT_DIR / "films_clean.csv", index=False)
+    excluded.to_csv(config.OUTPUT_DIR / "excluded_films.csv", index=False)
+    clean_report.to_csv(config.OUTPUT_DIR / "cleaning_report.csv", index=False)
+    print(f"[6 clean] films {len(films_talent)} -> {len(films_clean)} | excluded {len(excluded)} "
+          "-> outputs/films_clean.csv, excluded_films.csv, cleaning_report.csv")
+
+    # Stage 7 - KPIs for both windows
+    kpis = both_windows(films_clean)
 
     heading("QUALITY CHECK")
-    checks = spot_check(films, sample_ids=None)                         # stage 9
+    # Stage 9 - spot-check against the live API (uses the films as TMDb gave them)
+    checks = spot_check(films, sample_ids=None)
 
     heading("LOAD")
     print(f"All outputs are in {config.OUTPUT_DIR}")

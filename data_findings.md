@@ -105,6 +105,25 @@
 - **What I did about it:** Tested both ways in Phase 6; the rule stays, with this film named as the known exception.
 - **Residual risk:** At 500 titles the list cannot be read by eye; the review list is the safeguard.
 
+### F-11: Entry position describes the listed films, not the series — Severity: Medium
+
+- **What it is:** Each franchise film is labelled first, middle or last by release date among the films of its collection that are on the list. The full size of a series is not in the allowed data.
+- **How I detected it:** Stage 6 position counts, outputs/cleaning_report.csv.
+- **Scale:** 41 middle films in 22 collections; 23 first, 23 last, 9 only listed, 16 standalone.
+- **Effect on the client's number:** The "weak middle entries" test is exact where the whole series is listed (Harry Potter, 8 of 8) and approximate where it is not: a film labelled "first" may be the second entry of the series.
+- **What I did about it:** The label is named "position among listed films" in the code and the decision note; the test is reported only for collections with 3 or more listed films.
+- **Residual risk:** Labels change when next year's list adds earlier or later films; Adjoa's rerun note says so.
+
+### F-12: The cleaning rules for zeros and unreleased films change nothing in this list — Severity: Low
+
+- **What it is:** No film has a zero or missing budget or revenue, none is unreleased, and none is dated after the fetch.
+- **How I detected it:** Stage 6 cleaning report: 0 rows affected for each of these rules.
+- **Scale:** 0 of 112 films.
+- **Effect on the client's number:** None today.
+- **What I did about it:** The rules stay as insurance for next year's list, labelled as such, and are proven by a test with made-up rows.
+- **Residual risk:** None for this list.
+
+
 ## Looked wrong, is not wrong
 
 | Apparent problem | Why it looks wrong | Why it is actually fine |
