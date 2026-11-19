@@ -53,7 +53,17 @@ def main():
     if not_found:
         print(f"          not found on TMDb: {not_found}")
     heading("VALIDATE")
-    films, cast, crew = build_tables(config.RAW_DIR)                    # stage 3
+    films, cast, crew, flat_report = build_tables(config.RAW_DIR)       # stage 3
+    for name, table in {"films": films, "cast": cast, "crew": crew}.items():
+        table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
+    pd.Series(flat_report).to_csv(config.OUTPUT_DIR / "flatten_report.csv", header=["count"])
+    print(f"[3 flatten] films {len(films)} | cast {len(cast)} | crew {len(crew)} rows "
+          f"-> outputs/films.csv, cast.csv, crew.csv")
+    print(f"            empty cast {flat_report['films_with_empty_cast']} "
+          f"| empty crew {flat_report['films_with_empty_crew']} "
+          f"| no credits file {flat_report['films_without_credits_file']} "
+          f"| release_date blank {flat_report['release_date_blank']}, "
+          f"unparseable {flat_report['release_date_unparseable']}")
     report = quality_report(films)                                      # stage 5
 
     heading("TRANSFORM")

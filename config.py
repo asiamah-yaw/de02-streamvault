@@ -30,3 +30,43 @@ USER_AGENT = "de02-streamvault-lab (student project)"
 
 # --- Performance ---
 TIME_BUDGET_SECONDS = None                   # decided in Phase 8 (timing)
+
+
+# --- TMDb fields the pipeline depends on (Phase 3) ---
+# Each mapping is {TMDb field: our column name}; renaming happens here, once.
+FILM_FIELDS = {
+    "id": "movie_id",
+    "title": "title",
+    "release_date": "release_date",
+    "budget": "budget",
+    "revenue": "revenue",
+    "runtime": "runtime",
+    "status": "status",
+    "vote_average": "vote_average",
+    "vote_count": "vote_count",
+    "popularity": "popularity",
+    "original_language": "original_language",
+    "imdb_id": "imdb_id",
+}
+COLLECTION_FIELD = "belongs_to_collection"   # nested {id, name}, or null
+GENRES_FIELD = "genres"                       # list of {id, name}
+
+CAST_FIELDS = {
+    "credit_id": "credit_id",                 # unique key for one cast credit
+    "id": "person_id",
+    "name": "name",
+    "character": "character",
+    "order": "cast_order",                    # 0 = top-billed
+}
+CREW_FIELDS = {
+    "credit_id": "credit_id",                 # unique key for one crew credit
+    "id": "person_id",
+    "name": "name",
+    "department": "department",
+    "job": "job",
+}
+
+DATE_FIELDS = ["release_date"]                       # parsed to dates
+INT_FIELDS = ["budget", "revenue", "runtime", "vote_count"]  # nullable whole numbers
+KNOWN_STATUSES = ["Rumored", "Planned", "In Production",
+                  "Post Production", "Released", "Canceled"]  # checked in stage 5
