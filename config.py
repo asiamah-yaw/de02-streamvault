@@ -75,3 +75,7 @@ DATE_FIELDS = ["release_date"]                       # parsed to dates
 INT_FIELDS = ["budget", "revenue", "runtime", "vote_count"]  # nullable whole numbers
 KNOWN_STATUSES = ["Rumored", "Planned", "In Production",
                   "Post Production", "Released", "Canceled"]  # checked in stage 5
+
+# --- Profiling (Phase 5) - thresholds are assumptions; findings say so ---
+LOW_VOTE_COUNT = 50                          # ratings below this are not trusted
+SEQUEL_PATTERN = r"(?:\s\d+|\s(?:II|III|IV|V|VI))(?::|$)|\bPart\b"   # review list only

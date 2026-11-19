@@ -64,7 +64,13 @@ def main():
           f"| no credits file {flat_report['films_without_credits_file']} "
           f"| release_date blank {flat_report['release_date_blank']}, "
           f"unparseable {flat_report['release_date_unparseable']}")
-    report = quality_report(films)                                      # stage 5
+    # Stage 5 - profile films as TMDb gave them (reports, never fixes)
+    quality, quality_flags, quality_skew = quality_report(films, manifest, quarantine)
+    quality.to_csv(config.OUTPUT_DIR / "quality_report.csv", index=False)
+    quality_flags.to_csv(config.OUTPUT_DIR / "quality_flags.csv", index=False)
+    quality_skew.to_csv(config.OUTPUT_DIR / "quality_skew.csv", index=False)
+    print(f"[5 quality] {len(quality)} checks | {quality_flags['movie_id'].nunique()} films flagged "
+          "-> outputs/quality_report.csv, quality_flags.csv, quality_skew.csv")
 
     heading("TRANSFORM")
         # Stage 4 - join lead actor and directors onto films
