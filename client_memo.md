@@ -14,7 +14,7 @@
 | **2000 onward** | 787 million | 283 million | **2.8 times** | 63 films in 24 series; 8 standalones |
 | All years | 579 million | 162 million | 3.6 times | 96 films in 32 series; 16 standalones |
 
-The answer is the same in both periods. It holds with each side's biggest hit removed, and when the nine franchises with only one film on your list count as standalones (the lead narrows to 1.8 times from 2000). Middle entries are not weak: they earn about the same as the rest of their series.
+The answer is the same in both periods. It holds with each side's biggest hit removed, and when the nine franchises with only one film on your list count as standalones (the lead narrows to 1.8 times from 2000). Middle entries are not weak: they earn about the same as the rest of their series. One caution: standalones are rated higher by audiences (8.2 against 7.5 from 2000), so if the goal were quality rather than audience size, the answer would reverse.
 
 ## What I built
 
@@ -37,7 +37,7 @@ The answer is the same in both periods. It holds with each side's biggest hit re
 
 **Deal note: The Avengers** leads every franchise in both periods, 77% ahead of the next. From 2000, each film drew about **2.6 times** the typical other title on your list; its weakest still reached 79% of the series' typical. That 2.6 drove my view: if licence prices rise in step with audience size, paying up to 2.6 times a typical title's price, per film, is backed by demand. Above that, the advantage is paid away.
 
-**What would change this:** bundle prices above the audience lead, or more post-2000 standalones (only 8 today) performing differently.
+**What would change this:** bundle prices above the audience lead, more post-2000 standalones (only 8 today) performing differently, or a decision to buy for audience ratings rather than audience size.
 
 ## What I could not stand behind
 
