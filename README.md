@@ -48,7 +48,7 @@ python -m pipeline.timing                  # measure run time at 112, 500 and 5,
 python -m pipeline.compare_runs            # what changed since the last saved result (see improvement.md)
 ```
 
-- **First run** (needs the network): fetches details and credits for every candidate, 224 calls at about 0.45 seconds each, about 1.7 minutes, and saves each response in `data/raw/`.
+- **First run** (needs the network): fetches details and credits for every candidate (229 calls) and saves each response in `data/raw/`. Measured in a clean clone on 20 November 2026: 118 seconds, about 2 minutes.
 - **Every later run** reads the saved responses and makes no calls for the analysis. Measured (timing_report.md, excluding the fetch and the live spot-check): 1.58 seconds for this year's list, 3.40 seconds at 500 titles.
 - **Reruns are identical**, apart from `outputs/stage_timings.csv` and the live spot-check files, which record when they ran. Checked by comparing file fingerprints (md5) of every other output across two reruns.
 - **The live spot-check** makes about 30 calls and compares our tables with TMDb as it is today.
@@ -89,7 +89,7 @@ All settings and thresholds are in `config.py`. Every output goes to `outputs/`;
    ```bash
    STREAMVAULT_ID_LIST=lists/2027-q1.csv python run_pipeline.py
    ```
-   A new 500-title list takes about 7 to 8 minutes the first time (estimate from timing_report.md), then about 3.4 seconds per rerun.
+   A new 500-title list takes about 8 to 9 minutes the first time (estimate: about 1,000 calls at the 0.52 seconds per call measured in the clean clone), then about 3.4 seconds per rerun.
 3. **See what changed:** `python -m pipeline.compare_runs` compares this run with the last saved result (the committed reference is `snapshots/2026-11-19/`); `python -m pipeline.compare_runs --save` saves this run as the next quarter's starting point.
 4. **Read what needs a person's judgement:**
    - `outputs/quarantine.csv` and the "not found" ids printed by stage 2: what were they meant to be?
