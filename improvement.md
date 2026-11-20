@@ -2,7 +2,7 @@
 
 ## The problem it solves
 
-Adjoa reruns this analysis every quarter, sometimes live in a meeting, and the first question in the room will be: *what changed since last time, and why?* A different shortlist can come from three places: new or removed titles on the candidate list, TMDb revising its figures, or a change to the analysis settings or code. Each run writes 32 output files; without help, Adjoa would have to compare them by hand and could not tell which of the three caused a change.
+Adjoa reruns this analysis every quarter, sometimes live in a meeting, and the first question in the room will be: *what changed since last time, and why?* A different shortlist can come from three places: new or removed titles on the candidate list, TMDb revising its figures, or a change to the analysis settings or code. Each run writes 31 output files; without help, Adjoa would have to compare them by hand and could not tell which of the three caused a change.
 
 ## What I built
 
@@ -77,7 +77,7 @@ A test also compares two small invented results with a known verdict change, a r
 
 ## What it is worth to Kwame and Adjoa
 
-- **For Adjoa:** "what changed?" is answered in about half a second, in the meeting, instead of by comparing 32 files afterwards. The first table tells her whether to ask whoever supplied the list, to look at TMDb's revisions, or to check a change to the settings.
+- **For Adjoa:** "what changed?" is answered in about half a second, in the meeting, instead of by comparing 31 files afterwards. The first table tells her whether to ask whoever supplied the list, to look at TMDb's revisions, or to check a change to the settings.
 - **For Kwame:** a changed shortlist arrives with its reason. If a title drops out, he can see whether it left the list or was overtaken after a revision, which is what the board will ask. The deal note's figures (the demand index and the lead over the second franchise) are shown each time, so a weakening deal is visible before the negotiation.
 - **For whoever checks this work:** a fresh clone, run against today's TMDb, can be compared with the committed 19 November result, so any difference from the memo's figures is reported rather than guessed.
 

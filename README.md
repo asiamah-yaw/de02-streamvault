@@ -39,6 +39,8 @@ Needs Python 3.11 or newer (pandas 3 does not install on older versions); **test
    ```
    On Windows PowerShell: `setx TMDB_API_KEY "your-key-here"`, then open a new terminal.
 
+   **If a run stops with a network or key error, the error message can show the request address with your key in it.** Don't screenshot or share it, for example on a screen in a meeting, without removing the key first.
+
 ## Run
 
 ```bash
@@ -84,13 +86,14 @@ All settings and thresholds are in `config.py`. Every output goes to `outputs/`;
 
 ## Rerunning next quarter (for Adjoa)
 
-1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched.
+1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched. If this step is skipped and the new list drops a title, the run stops at stage 4 with `films ids do not match the fetch manifest`, because the old saved responses no longer match the list.
 2. **Save the new list as its own file** (one column, `tmdb_id`), for example `lists/2027-q1.csv`, and point the run at it. The client's original `data/id_list.csv` stays untouched:
    ```bash
-   STREAMVAULT_ID_LIST=lists/2027-q1.csv python run_pipeline.py
+   export STREAMVAULT_ID_LIST=lists/2027-q1.csv     # stays set in this terminal, for steps 2 and 3
+   python run_pipeline.py
    ```
    A new 500-title list takes about 8 to 9 minutes the first time (estimate: about 1,000 calls at the 0.52 seconds per call measured in the clean clone), then about 3.4 seconds per rerun.
-3. **See what changed:** `python -m pipeline.compare_runs` compares this run with the last saved result (the committed reference is `snapshots/2026-11-19/`); `python -m pipeline.compare_runs --save` saves this run as the next quarter's starting point.
+3. **See what changed** (in the same terminal, so the list setting from step 2 still applies; otherwise the list fingerprint is taken from `data/id_list.csv`): `python -m pipeline.compare_runs` compares this run with the last saved result (the committed reference is `snapshots/2026-11-19/`); `python -m pipeline.compare_runs --save` saves this run as the next quarter's starting point.
 4. **Read what needs a person's judgement:**
    - `outputs/quarantine.csv` and the "not found" ids printed by stage 2: what were they meant to be?
    - `outputs/quality_flags.csv`, check `no_collection_title_looks_like_sequel`: franchise entries TMDb does not group.
