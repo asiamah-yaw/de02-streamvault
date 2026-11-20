@@ -115,7 +115,7 @@ A fresh clone therefore needs a TMDb key and network access for the first fetch,
 pip install -r requirements-dev.txt
 python -m pytest
 ```
-The tests use small hand-made data, need no key and no network, and check four things: every candidate row is accounted for (reconciliation), the zero rule on a made-up row, the classification of bad ids, and that the join refuses duplicates.
+The tests use small hand-made data, need no key and no network, and check five things: every candidate row is accounted for (reconciliation), bad ids get the right reason, the zero rule works both ways (including a run with nothing to exclude, a case that once broke), the join refuses to duplicate a film, and the change report names each kind of change.
 
 ## Use of AI
 
