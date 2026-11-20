@@ -53,6 +53,6 @@ No optimisation was needed or made; the code is measured as built.
 
 ## Caveats
 
-- First fetch is not timed. Estimated from the real fetch: 0.45 s per live call x about 979 calls at 500 titles = about **7.4 minutes**, once; retries after a rate limit would add to this.
+- First fetch is not timed here. Measured in a clean clone on 20 November 2026: 229 calls in 118 s (0.52 s per call). At 500 titles, about 1,000 calls = about **8 to 9 minutes**, once; retries after a rate limit would add to this.
 - Adjoa's laptop is unknown; the headroom rule covers a machine about twice as slow. Running under WSL on the Linux file system is faster than on Windows paths.
 - Synthetic copies test volume, not new kinds of data problems that a real 500-title list may contain.

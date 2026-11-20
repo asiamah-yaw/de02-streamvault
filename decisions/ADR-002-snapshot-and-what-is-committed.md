@@ -44,4 +44,4 @@ Every raw response is cached once in a local data folder and the analysis reads 
 
 ## What this survives
 
-A 500-title list: the cache simply grows; the first fetch takes about 7 to 8 minutes, once. The comparison against the last saved result tells Adjoa what changed between quarters.
+A 500-title list: the cache simply grows; the first fetch takes about 8 to 9 minutes, once. The comparison against the last saved result tells Adjoa what changed between quarters.

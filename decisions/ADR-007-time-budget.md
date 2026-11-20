@@ -44,4 +44,4 @@ A rerun from the cache (stages 1 to 7, the whole command including start-up) mus
 
 ## What this survives
 
-A 500-title list: measured directly at 3.4 seconds. The first fetch of a new 500-title list is estimated at about 7 to 8 minutes, once.
+A 500-title list: measured directly at 3.4 seconds. The first fetch of a new 500-title list is estimated at about 8 to 9 minutes, once.
