@@ -19,7 +19,7 @@ The lead is the top-billed actor (lowest billing, then lowest person id). Direct
 - **How it would work:** one setting changes from 0 to 2.
 - **Why it is attractive:** ensemble films have several leads.
 - **Why rejected:** top billing is the standard signal; not tested before the deadline.
-- **Recommendation under it:** not tested; the franchise recommendation cannot move (it does not use talent).
+- **Recommendation under it:** not tested; the franchise recommendation cannot move (it does not use talent). **To test it:** set `LEAD_MAX_ORDER = 2` in `config.py`, run `python run_pipeline.py --skip-spotcheck` (a few seconds, no API calls) and read `outputs/talent_leads.csv`; then set it back to 0.
 
 ### Alternative B: Count Co-Director credits as directors
 

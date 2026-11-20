@@ -17,7 +17,7 @@ Should StreamVault spend its licensing budget on franchise bundles or standalone
 
 ## Setup
 
-Needs Python 3.11 or newer (pandas 3 does not install on older versions); **tested on Python 3.14.4 only**, under WSL Ubuntu. Needs a free TMDb API key and network access for the first run.
+**Tested on Python 3.14.4 only**, under WSL Ubuntu. pandas 3 needs at least Python 3.11, and the pinned package versions may need a newer one: if `pip install` fails on an older Python, use 3.14. Needs a free TMDb API key and network access for the first run.
 
 1. Clone the repository and enter it:
    ```bash
@@ -44,7 +44,7 @@ Needs Python 3.11 or newer (pandas 3 does not install on older versions); **test
 ## Run
 
 ```bash
-python run_pipeline.py                     # full run, including a live spot-check of 13 films
+python run_pipeline.py                     # full run, including a live spot-check of the riskiest films
 python run_pipeline.py --skip-spotcheck    # no live spot-check (fully offline only after the first fetch)
 python -m pipeline.timing                  # measure run time at 112, 500 and 5,000 titles
 python -m pipeline.compare_runs            # what changed since the last saved result (see improvement.md)
@@ -53,40 +53,57 @@ python -m pipeline.compare_runs            # what changed since the last saved r
 - **First run** (needs the network): fetches details and credits for every candidate (229 calls) and saves each response in `data/raw/`. Measured in a clean clone on 20 November 2026: 118 seconds, about 2 minutes.
 - **Every later run** reads the saved responses and makes no calls for the analysis. Measured (timing_report.md, excluding the fetch and the live spot-check): 1.58 seconds for this year's list, 3.40 seconds at 500 titles.
 - **Reruns are identical**, apart from `outputs/stage_timings.csv` and the live spot-check files, which record when they ran. Checked by comparing file fingerprints (md5) of every other output across two reruns.
-- **The live spot-check** makes about 30 calls and compares our tables with TMDb as it is today.
+- **The live spot-check** compares our tables with TMDb as it is today, for films chosen by fixed rules (13 films and 31 calls for this year's list; the number follows the list, at most 50 calls).
 
-**A good run ends like this:**
+**A good first run looks like this** (the full output of the clean-clone test on 20 November 2026; your seconds and folder will differ, and later runs show `0 live calls`):
 ```
+== EXTRACT ==
+[1 load] 127 rows read | 117 fetchable | 10 quarantined -> outputs/quarantine.csv
+[2 fetch] 117 ids | 112 found | 5 not found | 229 live calls -> outputs/fetch_manifest.csv
+          not found on TMDb: [8471293, 9412887, 8471294, 9412888, 7733901]
+
+== VALIDATE ==
+[3 flatten] films 112 | cast 7827 | crew 24932 rows -> outputs/films.csv, cast.csv, crew.csv
+            empty cast 0 | empty crew 0 | no credits file 0 | release_date blank 0, unparseable 0
+[5 quality] 39 checks | 18 films flagged -> outputs/quality_report.csv, quality_flags.csv, quality_skew.csv
+
+== TRANSFORM ==
+[4 join] films 112 -> 112 | 2+ directors 9 | no director 0 | no lead 0
 [6 clean] films 112 -> 112 | excluded 0 -> outputs/films_clean.csv, excluded_films.csv, cleaning_report.csv
 [7 kpis] all_years: franchise | from_2000: franchise -> outputs/kpi_*.csv, shortlist_*.csv, talent_*.csv, deal_note.csv
-...
-[9 spot-check] 13 films compared live | 31 calls | moves the recommendation: False (no decision-relevant change) -> ...
+
+== QUALITY CHECK ==
+[9 spot-check] 13 films compared live | 31 calls | moves the recommendation: False (no decision-relevant change) -> outputs/spotcheck.csv, spotcheck_summary.csv
+
+== LOAD ==
+[timing] 1_load 0.01s | 2_fetch 107.65s | 3_flatten 0.54s | 5_quality 0.12s | 4_join 0.07s | 6_clean 0.05s | 7_kpis 0.33s | 9_spotcheck 12.38s | total_in_process 121.32s -> outputs/stage_timings.csv
+All outputs are in /tmp/clone-test/outputs
 ```
-A `WARNING: THE RECOMMENDATION CHANGES BETWEEN WINDOWS` line would mean the two periods disagree. Without a key, the run stops at once with `TMDB_API_KEY is not set. See README, step 4.`
+A `WARNING: THE RECOMMENDATION CHANGES BETWEEN WINDOWS` line would mean the two periods disagree. A `WARNING: ... saved responses are older than the candidate list` line means last quarter's data may be in use (see "Rerunning next quarter", step 1). Without a key, the run stops at once with `TMDB_API_KEY is not set. See README, step 4.`
 
 Optional exploration: `pip install -r requirements-dev.txt`, then open `profiling/profiling.ipynb`. The notebook calls the same functions as the pipeline and re-implements nothing.
 
 ## What the pipeline does
 
-Run order is top to bottom. The design stage numbers follow the course's ten-stage plan; profiling (5) runs before the join (4) on purpose, so the data is examined as it arrived.
+The table is in run order. The design stage numbers follow the course's ten-stage plan, so they are not in sequence: profiling (5) runs before the join (4) on purpose, and timing (8) is a separate command.
 
-| Section | Design stage | File | What it does | Main outputs |
-|---|---|---|---|---|
-| Extract | 1 | `pipeline/load_ids.py` | Reads the 127 rows as text, classifies each, quarantines unusable rows and repeats with a reason | `ids_classified.csv`, `quarantine.csv` |
-| Extract | 2 | `pipeline/fetch.py` | Fetches details and credits once per film, with timeouts, retries and a polite pause; records every "not found" | `fetch_manifest.csv` |
-| Validate | 3 | `pipeline/flatten.py` | Turns the nested responses into three tables: one row per film, per cast credit, per crew credit | `films.csv`, `cast.csv`, `crew.csv` |
-| Validate | 5 | `pipeline/quality.py` | Profiles the films as received; reports problems, fixes nothing | `quality_report.csv`, `quality_flags.csv`, `quality_skew.csv` |
-| Transform | 4 | `pipeline/join.py` | Attaches the lead actor and directors; proves no film was dropped or repeated | `films_with_talent.csv`, `film_directors.csv`, `join_report.csv` |
-| Transform | 6 | `pipeline/clean.py` | Applies the franchise label, the insurance rules and series positions; counts every change | `films_clean.csv`, `cleaning_report.csv` |
-| Transform | 7 | `pipeline/kpis.py` | Both time periods, the verdict rule, alternatives, shortlists, talent, deal note | `kpi_*.csv`, `shortlist_*.csv`, `talent_*.csv`, `deal_note.csv` |
-| Quality check | 9 | `pipeline/spotcheck.py` | Re-fetches risky films live and classifies every difference | `spotcheck.csv`, `spotcheck_summary.csv` |
-| Measure | 8 | `pipeline/timing.py` | Separate command: times cached reruns at three sizes | `timing_report.md` |
+| Run order | Section | Design stage | File | What it does | Main outputs |
+|---|---|---|---|---|---|
+| 1 | Extract | 1 | `pipeline/load_ids.py` | Reads the 127 rows as text, classifies each, quarantines unusable rows and repeats with a reason | `ids_classified.csv`, `quarantine.csv` |
+| 2 | Extract | 2 | `pipeline/fetch.py` | Fetches details and credits once per film, with timeouts, retries and a polite pause; records every "not found" | `fetch_manifest.csv` |
+| 3 | Validate | 3 | `pipeline/flatten.py` | Turns the nested responses into three tables: one row per film, per cast credit, per crew credit | `films.csv`, `cast.csv`, `crew.csv` |
+| 4 | Validate | 5 | `pipeline/quality.py` | Profiles the films as received; reports problems, fixes nothing. Runs before the join on purpose, so the data is profiled as it arrived | `quality_report.csv`, `quality_flags.csv`, `quality_skew.csv` |
+| 5 | Transform | 4 | `pipeline/join.py` | Attaches the lead actor and directors; proves no film was dropped or repeated | `films_with_talent.csv`, `film_directors.csv`, `join_report.csv` |
+| 6 | Transform | 6 | `pipeline/clean.py` | Applies the franchise label, the insurance rules and series positions; counts every change | `films_clean.csv`, `cleaning_report.csv` |
+| 7 | Transform | 7 | `pipeline/kpis.py` | Both time periods, the verdict rule, alternatives, shortlists, talent, deal note | `kpi_*.csv`, `shortlist_*.csv`, `talent_*.csv`, `deal_note.csv` |
+| 8 | Quality check | 9 | `pipeline/spotcheck.py` | Re-fetches risky films live and classifies every difference | `spotcheck.csv`, `spotcheck_summary.csv` |
+| separate command | Measure | 8 | `pipeline/timing.py` | Separate command: times cached reruns at three sizes | `timing_report.md` |
 
 All settings and thresholds are in `config.py`. Every output goes to `outputs/`; `outputs/stage_timings.csv` records the seconds per stage on every run.
 
 ## Rerunning next quarter (for Adjoa)
 
-1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched. Saved films that are not on the new list are ignored, so they never enter the analysis.
+1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched. Saved films that are not on the new list are ignored, so they never enter the analysis, and the run prints a warning when saved responses are older than the list file.
 2. **Save the new list as its own file** (one column, `tmdb_id`), for example `lists/2027-q1.csv`, and point the run at it. The client's original `data/id_list.csv` stays untouched:
    ```bash
    export STREAMVAULT_ID_LIST=lists/2027-q1.csv     # stays set in this terminal, for steps 2 and 3
@@ -110,7 +127,7 @@ What runs unchanged, what needs your input and what stops being valid are listed
 
 **Why the TMDb responses are not committed (ADR-002).** TMDb's terms, as quoted on TMDb's own support forum (read 19 November 2026; the terms page itself could not be retrieved automatically), say you shall not "cache any TMDb metadata or photos other than for reasonable periods in order to provide your service". Saving responses to run this analysis fits that; republishing all of them in a public repository is not clearly allowed. TMDb's free key is also for non-commercial use with attribution: this project is coursework, but StreamVault's own quarterly use would need TMDb's commercial terms (question Q6).
 
-A fresh clone therefore needs a TMDb key and network access for the first fetch, and its figures can differ slightly from the memo's if TMDb has changed since 19 November 2026; `python -m pipeline.compare_runs` reports any difference against the committed reference. That reference was saved before three small code fixes on 20 November 2026 (error messages never show the key; only films on the current list are read from the saved responses; the change report fingerprints the list the run actually used), so the comparison also reports that the code changed. The results are identical.
+A fresh clone therefore needs a TMDb key and network access for the first fetch, and its figures can differ slightly from the memo's if TMDb has changed since 19 November 2026; `python -m pipeline.compare_runs` reports any difference against the committed reference. That reference was saved before the code fixes made after review on 20 November 2026 (error messages never show the key; only films on the current list are read from the saved responses; the change report fingerprints the list the run actually used; stricter checks on the id list; a warning when saved responses are older than the list), so the comparison also reports that the code changed. The results are identical.
 
 ## Tests
 

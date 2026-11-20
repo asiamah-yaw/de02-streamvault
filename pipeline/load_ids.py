@@ -17,6 +17,8 @@ def load_and_classify_ids(path):
     """
     # Read every row as text, exactly as the client sent it (Moodle 6)
     raw = pd.read_csv(path, dtype=str, keep_default_na=False, skip_blank_lines=False)
+    if config.ID_COLUMN not in raw.columns:           # a renamed column stops the run with a clear message
+        raise ValueError(f"{path}: expected a column named '{config.ID_COLUMN}', found {list(raw.columns)}")
     raw["row_number"] = np.arange(1, len(raw) + 1)   # row 1 = first id under the header
 
     value = raw[config.ID_COLUMN].str.strip()
@@ -30,17 +32,20 @@ def load_and_classify_ids(path):
             number.isna(),                 # e.g. "N/A"
             number <= 0,                   # e.g. -1
             number % 1 != 0,               # e.g. 12.5 (not a whole number)
+            ~value.str.fullmatch(r"\d+"),  # e.g. 1e3 or +12: a number, but not written as plain digits
         ],
-        ["blank", "imdb_format", "not_a_number", "non_positive", "not_whole_number"],
+        ["blank", "imdb_format", "not_a_number", "non_positive", "not_whole_number", "not_plain_digits"],
         default="fetchable",
     )
 
     # Clean integer id, only for rows that passed the rules
     raw["movie_id"] = number.where(raw["reason"].eq("fetchable")).astype("Int64")
 
-    # Repeats: keep the first row for each id, quarantine the later ones
-    first_row = raw.groupby("movie_id")["row_number"].transform("min")
-    is_repeat = raw["reason"].eq("fetchable") & raw["row_number"].ne(first_row)
+    # Repeats: keep the first row for each id, quarantine the later ones (fetchable rows only)
+    is_fetchable = raw["reason"].eq("fetchable")
+    first_row = (raw.loc[is_fetchable].groupby("movie_id")["row_number"].transform("min")
+                    .reindex(raw.index))
+    is_repeat = is_fetchable & raw["row_number"].ne(first_row)
     raw.loc[is_repeat, "reason"] = "repeat_of_earlier_row"
     raw["repeat_of_row"] = first_row.where(is_repeat).astype("Int64")
 

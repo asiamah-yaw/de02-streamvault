@@ -1,9 +1,11 @@
+# Used directly by the pipeline
+numpy==2.5.5
+pandas==3.1.1
+requests==2.34.2
+urllib3==2.8.0              # also needed by requests; fetch.py imports its retry policy directly
+# Installed because the packages above need them; pinned so every run gets the same versions
 certifi==2026.10.23
 charset-normalizer==3.5.2
 idna==3.20
-numpy==2.5.5
-pandas==3.1.1
 python-dateutil==4.0.0
-requests==2.34.2
 tzdata==2026.6
-urllib3==2.8.0

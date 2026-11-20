@@ -68,6 +68,12 @@ def main():
           f"-> outputs/fetch_manifest.csv")
     if not_found:
         print(f"          not found on TMDb: {not_found}")
+    # Saved responses older than the list file usually mean last quarter's data (README, rerunning, step 1).
+    list_saved = pd.Timestamp(config.ID_LIST_PATH.stat().st_mtime, unit="s", tz="UTC")
+    older = int((pd.to_datetime(manifest.loc[manifest["from_cache"], "fetched_at"], utc=True) < list_saved).sum())
+    if older:
+        print(f"  WARNING: {older} saved responses are older than the candidate list. If this is a new "
+              "quarter, archive data/raw first so they are fetched again (README, rerunning, step 1).")
 
     heading("VALIDATE")
     # Stage 3 - flatten nested JSON into films, cast, crew

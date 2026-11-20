@@ -19,9 +19,9 @@
 
 | Scenario | Runs | Run 1 (s) | Median (s) | Max (s) | Seconds per title | Target met? |
 |---|---|---|---|---|---|---|
-| 112 titles | 5 | 1.78 | 1.58 | 1.64 | 0.0124 | n/a |
+| 112 titles | 5 | 1.78 | 1.58 | 1.64 | 0.0124 | applies at 500 |
 | 500 titles | 5 | 3.50 | 3.40 | 3.80 | 0.0068 | yes |
-| 5,000 titles | 5 | 29.02 | 29.74 | 31.28 | 0.0059 | n/a |
+| 5,000 titles | 5 | 29.02 | 29.74 | 31.28 | 0.0059 | applies at 500 |
 
 - Headroom at 500 titles: median 3.40 s against 5 s: **met**.
 - Scale: seconds per title at 5,000 is **0.87x** the value at 500 (rule: at most 1.5x): **met**.

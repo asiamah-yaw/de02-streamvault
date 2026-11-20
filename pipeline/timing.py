@@ -145,7 +145,7 @@ def write_markdown(results, checks, estimate, spec, stages):
     for n, row in r.iterrows():
         met = "yes" if row["median_s"] <= config.TIME_BUDGET_SECONDS else "no"
         lines.append(f"| {n:,} titles | {config.TIMING_RUNS} | {row['run1_s']:.2f} | {row['median_s']:.2f} | "
-                     f"{row['max_s']:.2f} | {row['seconds_per_title']:.4f} | {met if n == 500 else 'n/a'} |")
+                     f"{row['max_s']:.2f} | {row['seconds_per_title']:.4f} | {met if n == 500 else 'applies at 500'} |")
     ratio = r.loc[5000, "seconds_per_title"] / r.loc[500, "seconds_per_title"]
     lines += ["",
               f"- Headroom at 500 titles: median {r.loc[500, 'median_s']:.2f} s against {config.TIME_HEADROOM_SECONDS} s: "

@@ -50,13 +50,18 @@ def test_every_row_is_accounted_for(tmp_path):
 # ---------- 2. bad ids are classified, each with one reason ----------
 def test_bad_ids_get_the_right_reason(tmp_path):
     ids = tmp_path / "id_list.csv"
-    ids.write_text("tmdb_id\n11\n\nN/A\n-1\ntt0468569\n11\n12.5\n")
+    ids.write_text("tmdb_id\n11\n\nN/A\n-1\ntt0468569\n11\n12.5\n1e3\n")
     _, quarantine = load_and_classify_ids(ids)
     reasons = dict(zip(quarantine["row_number"], quarantine["reason"]))
-    # A decimal such as 12.5 gets its own reason and is quarantined, without crashing the load.
+    # A decimal such as 12.5, or a number written as 1e3, gets its own reason without crashing the load.
     assert reasons == {2: "blank", 3: "not_a_number", 4: "non_positive", 5: "imdb_format",
-                       6: "repeat_of_earlier_row", 7: "not_whole_number"}
+                       6: "repeat_of_earlier_row", 7: "not_whole_number", 8: "not_plain_digits"}
     assert quarantine.loc[quarantine["reason"].eq("repeat_of_earlier_row"), "repeat_of_row"].tolist() == [1]
+
+    renamed = tmp_path / "renamed.csv"
+    renamed.write_text("movie\n11\n")
+    with pytest.raises(ValueError, match="expected a column named 'tmdb_id'"):
+        load_and_classify_ids(renamed)
 
 
 # ---------- 3. the zero rule, both ways, and the empty case that once broke ----------

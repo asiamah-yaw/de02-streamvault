@@ -35,7 +35,8 @@ def fetch_one(session, movie_id, endpoint, key):
     ok_file = config.RAW_DIR / f"{endpoint}_{movie_id}.json"
     missing_file = config.RAW_DIR / f"{endpoint}_{movie_id}.404"
 
-    # Cache first: a saved answer means no API call (Moodle 8.1)
+    # Cache first: a saved answer means no API call (Moodle 8.1).
+    # Look for a saved 200 response, then a saved 404; either one is returned without a call or a pause.
     for cached, status in ((ok_file, 200), (missing_file, 404)):
         if cached.exists():
             saved_at = datetime.fromtimestamp(cached.stat().st_mtime, tz=timezone.utc)
@@ -59,7 +60,7 @@ def fetch_one(session, movie_id, endpoint, key):
         raise RuntimeError(f"TMDb answered HTTP {response.status_code} for {endpoint} {movie_id}"
                            f"{' (the API key is wrong)' if response.status_code == 401 else ''}.")
 
-    time.sleep(config.SLEEP_BETWEEN_CALLS)    # polite to a free API
+    time.sleep(config.SLEEP_BETWEEN_CALLS)    # polite pause after every live call, 200 and 404 alike
     return {"movie_id": movie_id, "endpoint": endpoint, "status": response.status_code,
             "from_cache": False, "fetched_at": datetime.now(timezone.utc).isoformat()}
 
