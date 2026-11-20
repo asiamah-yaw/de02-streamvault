@@ -39,7 +39,7 @@ Needs Python 3.11 or newer (pandas 3 does not install on older versions); **test
    ```
    On Windows PowerShell: `setx TMDB_API_KEY "your-key-here"`, then open a new terminal.
 
-   **If a run stops with a network or key error, the error message can show the request address with your key in it.** Don't screenshot or share it, for example on a screen in a meeting, without removing the key first.
+   Error messages never show the key: if a call fails, the run names the film and the kind of error only.
 
 ## Run
 
@@ -86,14 +86,14 @@ All settings and thresholds are in `config.py`. Every output goes to `outputs/`;
 
 ## Rerunning next quarter (for Adjoa)
 
-1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched. If this step is skipped and the new list drops a title, the run stops at stage 4 with `films ids do not match the fetch manifest`, because the old saved responses no longer match the list.
+1. **Archive last quarter's data so everything is fetched fresh:** `mv data/raw data/raw_2026-11-19`. Without this, films already saved are not fetched again, and their figures would stay as they were when first fetched. Saved films that are not on the new list are ignored, so they never enter the analysis.
 2. **Save the new list as its own file** (one column, `tmdb_id`), for example `lists/2027-q1.csv`, and point the run at it. The client's original `data/id_list.csv` stays untouched:
    ```bash
    export STREAMVAULT_ID_LIST=lists/2027-q1.csv     # stays set in this terminal, for steps 2 and 3
    python run_pipeline.py
    ```
    A new 500-title list takes about 8 to 9 minutes the first time (estimate: about 1,000 calls at the 0.52 seconds per call measured in the clean clone), then about 3.4 seconds per rerun.
-3. **See what changed** (in the same terminal, so the list setting from step 2 still applies; otherwise the list fingerprint is taken from `data/id_list.csv`): `python -m pipeline.compare_runs` compares this run with the last saved result (the committed reference is `snapshots/2026-11-19/`); `python -m pipeline.compare_runs --save` saves this run as the next quarter's starting point.
+3. **See what changed:** `python -m pipeline.compare_runs` compares this run with the last saved result (the committed reference is `snapshots/2026-11-19/`); `python -m pipeline.compare_runs --save` saves this run as the next quarter's starting point.
 4. **Read what needs a person's judgement:**
    - `outputs/quarantine.csv` and the "not found" ids printed by stage 2: what were they meant to be?
    - `outputs/quality_flags.csv`, check `no_collection_title_looks_like_sequel`: franchise entries TMDb does not group.
@@ -110,7 +110,7 @@ What runs unchanged, what needs your input and what stops being valid are listed
 
 **Why the TMDb responses are not committed (ADR-002).** TMDb's terms, as quoted on TMDb's own support forum (read 19 November 2026; the terms page itself could not be retrieved automatically), say you shall not "cache any TMDb metadata or photos other than for reasonable periods in order to provide your service". Saving responses to run this analysis fits that; republishing all of them in a public repository is not clearly allowed. TMDb's free key is also for non-commercial use with attribution: this project is coursework, but StreamVault's own quarterly use would need TMDb's commercial terms (question Q6).
 
-A fresh clone therefore needs a TMDb key and network access for the first fetch, and its figures can differ slightly from the memo's if TMDb has changed since 19 November 2026; `python -m pipeline.compare_runs` reports any difference against the committed reference.
+A fresh clone therefore needs a TMDb key and network access for the first fetch, and its figures can differ slightly from the memo's if TMDb has changed since 19 November 2026; `python -m pipeline.compare_runs` reports any difference against the committed reference. That reference was saved before three small code fixes on 20 November 2026 (error messages never show the key; only films on the current list are read from the saved responses; the change report fingerprints the list the run actually used), so the comparison also reports that the code changed. The results are identical.
 
 ## Tests
 

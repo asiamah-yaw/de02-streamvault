@@ -71,7 +71,8 @@ def main():
 
     heading("VALIDATE")
     # Stage 3 - flatten nested JSON into films, cast, crew
-    films, cast, crew, flat_report = timed("3_flatten", build_tables, config.RAW_DIR)
+    found = movies.loc[movies["status"].eq(200), "movie_id"].tolist()   # only the films on this list
+    films, cast, crew, flat_report = timed("3_flatten", build_tables, config.RAW_DIR, found)
     for name, table in {"films": films, "cast": cast, "crew": crew}.items():
         table.to_csv(config.OUTPUT_DIR / f"{name}.csv", index=False)
     pd.Series(flat_report).to_csv(config.OUTPUT_DIR / "flatten_report.csv", header=["count"])

@@ -45,14 +45,19 @@ def fetch_one(session, movie_id, endpoint, key):
     url = f"{config.API_BASE_URL}/movie/{movie_id}"
     if endpoint == "credits":
         url += "/credits"
-    response = session.get(url, params={"api_key": key}, timeout=config.REQUEST_TIMEOUT)
+    try:
+        response = session.get(url, params={"api_key": key}, timeout=config.REQUEST_TIMEOUT)
+    except requests.RequestException as exc:  # the original message holds the URL, and the URL holds the key
+        raise RuntimeError(f"TMDb request failed for {endpoint} {movie_id} ({type(exc).__name__}). "
+                           "Every response so far is saved, so a rerun resumes from here.") from None
 
     if response.status_code == 200:
         ok_file.write_text(json.dumps(response.json()), encoding="utf-8")
     elif response.status_code == 404:
         missing_file.write_text(response.text, encoding="utf-8")
-    else:
-        response.raise_for_status()           # e.g. 401 bad key: stop loudly
+    else:                                     # e.g. 401 bad key: stop loudly, without printing the key
+        raise RuntimeError(f"TMDb answered HTTP {response.status_code} for {endpoint} {movie_id}"
+                           f"{' (the API key is wrong)' if response.status_code == 401 else ''}.")
 
     time.sleep(config.SLEEP_BETWEEN_CALLS)    # polite to a free API
     return {"movie_id": movie_id, "endpoint": endpoint, "status": response.status_code,

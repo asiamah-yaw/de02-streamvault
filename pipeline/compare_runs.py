@@ -22,9 +22,14 @@ TABLES = ["kpi_comparison", "shortlist_franchise", "shortlist_standalone", "deal
 REVENUE_CHANGE_MIN = 0.01        # a box-office revision counts only if it is 1% or more
 
 
-def _list_fingerprint():
-    """Hash of the sorted, de-duplicated ids: re-sorting the file does not count as a change."""
-    ids = pd.read_csv(config.ID_LIST_PATH, dtype=str, keep_default_na=False, skip_blank_lines=False)[config.ID_COLUMN]
+def _list_fingerprint(path=None):
+    """Hash of the sorted, de-duplicated ids: re-sorting the file does not count as a change.
+
+    path: the run's own outputs/ids_classified.csv, so the fingerprint is of the list that run used,
+    whatever list setting is active when this command runs. None reads the configured list.
+    """
+    ids = pd.read_csv(path or config.ID_LIST_PATH, dtype=str, keep_default_na=False,
+                      skip_blank_lines=False)[config.ID_COLUMN]
     return hashlib.md5("\n".join(sorted(set(ids.str.strip()))).encode()).hexdigest()[:12]
 
 
@@ -50,7 +55,7 @@ def current_result(out_dir=None):
     fetched = (pd.to_datetime(stamps, unit="s", errors="coerce", utc=True) if pd.api.types.is_numeric_dtype(stamps)
                else pd.to_datetime(stamps, errors="coerce", utc=True))
     films = pd.read_csv(out / "films_clean.csv")[["movie_id", "title", "revenue", "is_franchise", "collection_name"]]
-    summary = {"id_list_fingerprint": _list_fingerprint(),
+    summary = {"id_list_fingerprint": _list_fingerprint(out / "ids_classified.csv"),
                "rows_in_list": len(pd.read_csv(out / "ids_classified.csv")),
                "films_analysed": len(films),
                "fetched_from": f"{fetched.min():%Y-%m-%d}", "fetched_to": f"{fetched.max():%Y-%m-%d}",

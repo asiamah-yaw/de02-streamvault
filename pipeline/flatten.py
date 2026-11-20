@@ -10,9 +10,15 @@ import pandas as pd
 import config
 
 
-def read_cached(raw_dir, endpoint):
-    """Load every saved 200 response for one endpoint ("movie" or "credits")."""
+def read_cached(raw_dir, endpoint, movie_ids=None):
+    """Load the saved 200 responses for one endpoint ("movie" or "credits").
+
+    movie_ids: only these films (the current list); None reads every saved film.
+    """
     files = sorted(raw_dir.glob(f"{endpoint}_*.json"))   # .404 files are skipped
+    if movie_ids is not None:                            # older saved films are ignored, not analysed
+        keep = {f"{endpoint}_{int(i)}.json" for i in movie_ids}
+        files = [f for f in files if f.name in keep]
     return [json.loads(path.read_text(encoding="utf-8")) for path in files]
 
 
@@ -40,10 +46,11 @@ def convert_types(films):
     return films, report
 
 
-def build_tables(raw_dir):
+def build_tables(raw_dir, movie_ids=None):
     """Flatten cached responses into three tables.
 
-    Takes:   folder of cached JSON files
+    Takes:   folder of cached JSON files; movie_ids = the films found for the current list
+             (None reads every saved film, as the profiling notebook does)
     Returns: films  (one row per film)
              cast   (one row per film per cast credit)
              crew   (one row per film per crew credit = person x job)
@@ -51,8 +58,8 @@ def build_tables(raw_dir):
     Asserts: films has one row per saved movie response
              movie_id unique in films; credit_id unique in cast and in crew
     """
-    movies = read_cached(raw_dir, "movie")
-    credits = read_cached(raw_dir, "credits")
+    movies = read_cached(raw_dir, "movie", movie_ids)
+    credits = read_cached(raw_dir, "credits", movie_ids)
 
     # films: one row per film (flat dicts first, then one DataFrame - Moodle 1)
     films = pd.DataFrame(movies)
