@@ -45,6 +45,8 @@ The candidate list held 127 rows. **112 films were analysed**; the other 15 are 
 | After cleaning | 112 analysed | 0 | no film unreleased or dated after the fetch |
 | Films analysed | 112 | | 96 in a TMDb collection, 16 not |
 
+**Types and conversions.** The candidate list is read as text, so no id is altered on loading (F-01). In the films table, `release_date` is converted to a date, and `budget`, `revenue`, `runtime` and `vote_count` to whole numbers that may be missing. Every value a conversion could not read is counted per field (outputs/flatten_report.csv): **0 blank or unreadable dates and 0 non-numeric values across all 112 films.** Every film also has its credits, with a non-empty cast and crew (7,827 cast and 24,932 crew rows). A zero budget or box office is a separate question, handled in F-12.
+
 ## Findings, ranked by risk
 
 ### F-08: Several franchises are represented by a single film — Severity: High
